@@ -9,6 +9,9 @@
 
 * [Java 中垃圾回收机制中如何判断对象需要回收？常见的 GC 回收算法有哪些？](#4)
 
+* [集合类中的 List 和 Map 的线程安全版本是什么，如何保证线程安全的？](#5)
+
+
 
 ------
 
@@ -132,4 +135,34 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 现在的商业虚拟机采用分代收集算法，它根据对象存活周期将内存划分为几块，不同块采用适当的收集算法。 一般将堆分为新生代和老年代。 
 新生代：复制算法
 老年代：标记清除、标记整理
+</details>
+
+
+### <span id="5">5.集合类中的 List 和 Map 的线程安全版本是什么，如何保证线程安全的？</span>
+
+##### 如何判断对象需要回收
+<details>
+<summary>展开</summary>
+在平常开发中，经常使用的List 就是 ArrayList 和 LinkedList，这两个都不是线程安全的。经常使用的Map 就是HashMap，也不是线程安全的。
+
+所以在多线程并发下，这些就不能使用了，必须使用线程安全的容器。
+
+### List
+1. 使用Collections.synchronizedList(List<T> list) 可以将其包装成一个线程安全的 List。
+2. Vector：在它的大部分方法上添加了 synchronized 关键字，用来保证线程安全。
+
+### Map
+1. 使用Collections.synchronizedMap(Map<T> map) 可以将其包装成一个线程安全的 Map。
+2. HashTable：在它的大部分方法上添加了 synchronized 关键字，用来保证线程安全。HashTable 的 Key 和 Value 都不允许为 null。
+3. ConcurrentHashMap ：1.8之前采用分段锁，1.8之后取消分段锁，采用Node + CAS + Synchronized来保证并发安全
+
+### Set
+1. 使用Collections.synchronizedSet(Set<T> set) 可以将其包装成一个线程安全的 Set。
+2. ConcurrentSkipListSet
+
+
+### Queue
+1. ConcurrentLinkedQueue：通过无锁的方式(CAS)，实现了高并发状态下的高性能
+2. ConcurrentLinkedDeque：通过无锁的方式(CAS)，实现了高并发状态下的高性能
+3. LinkedBlockingDeque：一个线程安全的双端队列实现。它的内部使用链表结构，每一个节点都维护了一个前驱节点和一个后驱节点。
 </details>
