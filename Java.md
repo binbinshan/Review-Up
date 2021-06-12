@@ -181,6 +181,7 @@ ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某
 ##### ThreadLocal内存泄露
 <details>
 <summary>展开</summary>
+
 1. ThreadLocal是被ThreadLocalMap以弱引用的方式关联着。
 
 3. 因此如果ThreadLocal没有被ThreadLocalMap以外的对象引用，则在下一次GC的时候，ThreadLocal实例就会被回收，那么此时ThreadLocalMap里的一组KV的K就是null了
