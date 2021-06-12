@@ -11,6 +11,7 @@
 
 * [集合类中的 List 和 Map 的线程安全版本是什么，如何保证线程安全的？](#5)
 
+* [ThreadLocal 实现原理是什么？](#6)
 
 
 ------
@@ -139,8 +140,6 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 
 
 ### <span id="5">5.集合类中的 List 和 Map 的线程安全版本是什么，如何保证线程安全的？</span>
-
-##### 如何判断对象需要回收
 <details>
 <summary>展开</summary>
 在平常开发中，经常使用的List 就是 ArrayList 和 LinkedList，这两个都不是线程安全的。经常使用的Map 就是HashMap，也不是线程安全的。
@@ -165,4 +164,29 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 1. ConcurrentLinkedQueue：通过无锁的方式(CAS)，实现了高并发状态下的高性能
 2. ConcurrentLinkedDeque：通过无锁的方式(CAS)，实现了高并发状态下的高性能
 3. LinkedBlockingDeque：一个线程安全的双端队列实现。它的内部使用链表结构，每一个节点都维护了一个前驱节点和一个后驱节点。
+</details>
+
+### <span id="6">6.ThreadLocal 实现原理是什么？</span>
+
+##### 实现原理
+<details>
+<summary>展开</summary>
+ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某一时间访问到的并非同一个对象，这样就隔离了多个线程对数据的数据共享。
+
+实现原理：
+1. 每个线程都会有一个变量threadLocals,这个threadLocals就是通过ThreadLocal进行维护的ThreadLocalMap，
+2. 这个map是key-val结构的；Map里面的key为ThreadLocal的弱引用，value为需要共享的值。所以每个线程只能拿到根据自己创建的ThreadLocal去ThreadLocalMap中获取对象，到达了线程隔离的效果。
+</details>
+
+##### ThreadLocal内存泄露
+<details>
+<summary>展开</summary>
+1. ThreadLocal是被ThreadLocalMap以弱引用的方式关联着。
+
+3. 因此如果ThreadLocal没有被ThreadLocalMap以外的对象引用，则在下一次GC的时候，ThreadLocal实例就会被回收，那么此时ThreadLocalMap里的一组KV的K就是null了
+4. 因此在没有额外操作的情况下，此处的V便不会被外部访问到，而且只要Thread实例一直存在，Thread实例就强引用着ThreadLocalMap，因此ThreadLocalMap就不会被回收
+5. 这些key为null的Entry的value就会一直存在一条强引用链：Thread Ref -> Thread -> ThreaLocalMap -> Entry -> value，而这块value永远不会被访问到了，所以存在着内存泄露。
+
+注意：如果频繁的在线程中new ThreadLocal对象，在使用结束时，最好调用ThreadLocal.remove来释放其value的引用，避免在ThreadLocal被回收时value无法被访问却又占用着内存
+
 </details>
