@@ -262,6 +262,7 @@ equals() : 它的作用也是判断两个对象是否相等。但它一般有两
 ##### JMM 中内存模型是怎样的？
 <details>
 <summary>展开</summary>
+
 ![](https://github.com/binbinshan/Review-Up/images/Java/16164236743234.jpg)
 
 每个线程都有自己的工作内存，是CPU级别的缓存：
