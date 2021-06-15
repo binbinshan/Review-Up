@@ -263,7 +263,7 @@ equals() : 它的作用也是判断两个对象是否相等。但它一般有两
 <details>
 <summary>展开</summary>
 
-![](https://github.com/binbinshan/Review-Up/images/Java/16164236743234.jpg)
+![](https://github.com/binbinshan/Review-Up/blob/master/images/Java/16164236743234.jpg)
 
 每个线程都有自己的工作内存，是CPU级别的缓存：
 1. 首先从主内存中read数据，然后load到工作内存中
