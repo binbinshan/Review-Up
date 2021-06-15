@@ -42,7 +42,7 @@ JDK 1.8 中，取消类 Segment 分段锁，采用Node + CAS + Synchronized来�
 当 HashEntry 对象组成的链表长度超过 TREEIFY_THRESHOLD 时，链表转换为红黑树，提升性能。底层变更为数组 + 链表 + 红黑树
 </details>
 
-
+------ 
 ### <span id="2">2.volatile 关键字解决了什么问题，它的实现原理是什么？</span>
 
 ##### 解决了什么问题
@@ -66,6 +66,7 @@ JMM为了优化性能，在不改变正确原意的情况下，允许编译器�
 volatile防止重排的实现是基于happens-before，其中happens-before有一条规则，所有的volatile域的读应该在volatile域的写之后。为了实现 volatile 内存语义时，编译器在生成字节码时，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序。
 </details>
 
+------ 
 
 ### <span id="3">3.Synchronized 关键字底层是如何实现的？它与 Lock 相比优缺点分别是什么？</span>
 
@@ -102,6 +103,7 @@ volatile防止重排的实现是基于happens-before，其中happens-before有�
 
 </details>
 
+------ 
 
 ### <span id="4">4.Java 中垃圾回收机制中如何判断对象需要回收？常见的 GC 回收算法有哪些？</span>
 
@@ -145,6 +147,7 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 老年代：标记清除、标记整理
 </details>
 
+------ 
 
 ### <span id="5">5.集合类中的 List 和 Map 的线程安全版本是什么，如何保证线程安全的？</span>
 <details>
@@ -173,6 +176,8 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 3. LinkedBlockingDeque：一个线程安全的双端队列实现。它的内部使用链表结构，每一个节点都维护了一个前驱节点和一个后驱节点。
 </details>
 
+------ 
+
 ### <span id="6">6.ThreadLocal 实现原理是什么？</span>
 
 ##### 实现原理
@@ -199,6 +204,7 @@ ThreadLocal为每个线程都提供了变量的副本，使得每个线程在某
 
 </details>
 
+------ 
 
 ### <span id="7">7.String 类能不能被继承？为什么？</span>
 
@@ -244,6 +250,8 @@ String类是被final关键字修饰了，所以无法被继承。
 ```
 </details>
 
+------ 
+
 ### <span id="8">8.== 和 equals() 的区别？</span>
 
 <details>
@@ -256,6 +264,8 @@ equals() : 它的作用也是判断两个对象是否相等。但它一般有两
 * 情况 1：类没有覆盖 equals() 方法。则通过 equals() 比较该类的两个对象时，等价于通过“==”比较这两个对象。
 * 情况 2：类覆盖了 equals() 方法。一般，我们都覆盖 equals() 方法来两个对象的内容相等；若它们的内容相等，则返回 true (即，认为这两个对象相等)。
 </details>
+
+------ 
 
 ### <span id="9">9.JMM 中内存模型是怎样的？什么是指令序列重排序？</span>
 
