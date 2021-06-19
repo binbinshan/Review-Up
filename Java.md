@@ -1,5 +1,10 @@
 # Java
 
+     
+   ```
+   tips:如需要展开全部,可以在网页控制台执行以下代码
+   [...document.getElementsByTagName("details")].forEach(e => e.open = true)
+   ```
 
 * [HashMap 与 ConcurrentHashMap 的实现原理是怎样的？ConcurrentHashMap 是如何保证线程安全的？](#1)
 
