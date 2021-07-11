@@ -26,6 +26,18 @@
 
 * [Java 线程和操作系统的线程是怎么对应的？Java线程是怎样进行调度的? ](#10)
 
+* [简述 Spring bean 的生命周期](#11)
+
+* [简述 Spring 的 IOC 机制](#12)
+
+* [简述 Spring 注解的实现原理](#13)
+
+* [简述 Spring AOP 的原理 ](#14)
+
+* [Spring是如何解决循环依赖的？](#15)
+
+* [Spring的Bean作用域有哪些？](#16)
+
 
 ------
 
@@ -338,4 +350,276 @@ Java线程是用本地线程实现的，所以使用线程的Java程序与使用
 Java线程的调度模式使用的抢占式线程调度。
 如果希望系统能给某些线程多分配一些时间，给一些线程少分配一些时间，可以通过设置线程优先级来完成，Java语言一共10个级别的线程优先级，在两线程同时处于ready状态时，优先级越高的线程越容易被系统选择执行。
 但优先级并不是很靠谱，因为Java线程是通过映射到系统的原生线程上来实现的，所以线程调度最终还是取决于操作系统。
+</details>
+
+
+
+
+------ 
+
+### <span id="11">11.简述 Spring bean 的生命周期</span>
+
+<details>
+<summary>展开</summary>
+
+# 简述 Spring bean 的生命周期
+
+![](https://github.com/binbinshan/Review-Up/blob/master/images/Java/16260070649694.jpg)
+
+Bean 的生命周期概括起来就是 4 个阶段：
+* 实例化（Instantiation）
+
+* 属性赋值（Populate）
+
+* 初始化（Initialization）
+
+* 销毁（Destruction）
+
+
+### 详细步骤
+
+* 实例化：第 1 步，实例化一个 bean 对象；
+
+* 属性赋值：第 2 步，为 bean 设置相关属性和依赖；
+
+* 初始化：第 3~7 步，步骤较多，其中第 5、6 步为初始化操作，第 3、4 步为在初始化前执行，第 7 步在初始化后执行，该阶段结束，才能被用户使用；
+
+* 销毁：第 8~10步，第8步不是真正意义上的销毁（还没使用呢），而是先在使用前注册了销毁的相关调用接口，为了后面第9、10步真正销毁 bean 时再执行相应的方法。
+
+具体步骤：
+1. Spring对Bean进行实例化（相当于程序中的new Xx()）
+
+2. Spring将值和Bean的引用注入进Bean对应的属性中
+
+3. 如果Bean实现了Aware接口，就能在 bean 中获得相应的 Spring 容器资源。比如bean的id属性、当前BeanFactory容器的引用等。
+
+4. 如果Bean实现了BeanPostProcess接口，Spring将调用它们的postProcessBeforeInitialization（初始化前置处理）方法（作用是在Bean实例创建成功后对进行增强处理，如对Bean进行修改，增加某个功能）
+
+5. 如果Bean实现了InitializingBean接口，Spring将调用它们的afterPropertiesSet方法，作用是在Bean的全部属性设置成功后执行的初始化方法。
+
+6. 在配置文件中对Bean使用init-method声明初始化，与实现InitializingBean接口的作用一样，作用都是在Bean的全部属性设置成功后执行的初始化方法，
+
+7. 如果Bean实现了BeanPostProcess接口，Spring将调用它们的postProcessAfterInitialization（初始化后置处理）方法（作用与6的一样，只不过6是在Bean初始化前执行的，而这个是在Bean初始化后执行的，时机不同 )
+
+8. 经过以上的工作后，Bean将一直驻留在应用上下文中给应用使用，直到应用上下文被销毁
+
+9. 如果Bean实现了DispostbleBean接口，Spring将调用它的destory方法，作用与在配置文件中对Bean使用destory-method属性的作用一样，都是在Bean实例销毁前执行的方法。
+
+
+
+### 总结
+Spring Bean 的生命周期：
+
+1. 首先是实例化、属性赋值、初始化、销毁这 4 个大阶段；
+
+3. 然后初始化的具体操作，有 Aware 接口的依赖注入、BeanPostProcessor 在初始化前后的处理以及 InitializingBean 和 init-method 的初始化操作；
+
+4. 销毁的具体操作，有注册相关销毁回调接口，最后通过DisposableBean 和 destory-method 进行销毁。
+
+</details>
+
+
+
+------ 
+
+### <span id="12">12.简述 Spring 的 IOC 机制</span>
+
+<details>
+<summary>展开</summary>
+
+
+IOC叫做控制反转，是一种设计思想，意味着你将设计好的对象交给容器控制，而不是在对象内部直接创建。
+
+* 谁控制谁，控制了什么？
+
+> 首先解释下控制是什么意思？控制就是对象创建、初始化、销毁。
+
+创建对象：原来创建对象是通过new一下，现在spring容器给创建了。
+
+初始化：原来通过构造器或者setter方法赋值，现在 Spring容器给自动注入了
+
+销毁：之前给对选哪个赋值null或者销毁操作，现在spring容器负责销毁。
+
+IOC解决了繁琐的管理对象声明周期的操作，解耦了我们的代码。
+
+* 为什么是反转，反转了些什么
+
+传统应用程序中，通过引入对象来主动获取依赖对象，这是正转。
+
+Spring中，通过容器来创建和注入对象，对象只是被动的接受依赖对象，依赖对象的获取方式被容器反转了，这是反转。
+
+反转后，我们无法决定对象生命周期的任何阶段，最多借助spring的扩展做一些小动作。
+
+</details>
+
+
+
+------ 
+
+### <span id="13">13.简述 Spring 注解的实现原理</span>
+
+<details>
+<summary>展开</summary>
+
+1. Spring如何使用注解机制完成自动装配
+Java实例构造时会调用默认父类无参构造方法，Spring正是利用了这一点，让"操作元素的代码"得以执行。
+
+【两种处理策略】
+1. 类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。
+Spring容器根据注解的过滤规则扫描读取注解Bean定义类，并将其注册到Spring IoC容器中。
+
+2. 类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。
+SpringIoC容器通过Bean后置注解处理器解析Bean内部的注解。
+
+
+注解注入在 XML 注入之前执行。因此，XML 配置会覆盖通过这两种方法连接的属性的注释。
+
+</details>
+
+
+
+------ 
+
+### <span id="14">14.简述 Spring AOP 的原理 </span>
+
+<details>
+<summary>展开</summary>
+
+Spring AOP的实现是采用动态代理。
+
+* Spring AOP 默认为 AOP 代理使用标准的 JDK 动态代理。这允许代理任何接口。
+
+* Spring AOP 也可以使用 CGLIB 代理。默认情况下，如果业务对象未实现接口，则使用 CGLIB。
+
+
+
+### JDK动态代理
+动态代理(JDK代理/接口代理)，使用的JDK API，需要目标对象实现了接口才可以。(因为JDK代理需要用构造方法动态获取具体的接口信息，如果不实现接口的话，没法初始化）
+JDK中生成代理对象主要涉及的类有java.lang.reflect Proxy，主要方法为
+```
+//返回一个指定接口的代理类实例，该接口可以将方法调用指派到指定的调用处理程序。
+static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHandler h ) 
+
+ ClassLoader loader    //指定当前目标对象使用类加载器
+ Class<?>[] interfaces //目标对象实现的接口的类型
+ InvocationHandler h   //事件处理器（下方处理方法）
+```
+java.lang.reflect InvocationHandler，主要方法为
+```
+// 在代理实例上处理方法调用并返回结果。
+Object invoke(Object proxy, Method method, Object[] args) 
+```
+
+### CGLIB动态代理
+cglib (Code Generation Library )是一个第三方代码生成类库，CGLIB会让生成的代理类继承被代理类，并在代理类中对代理方法进行强化处理，使用cglib代理的对象则无需实现接口，但是无法代理被final修饰的类。
+代理类将委托类作为自己的父类，并为其中的非final委托方法创建两个方法：
+* 一个是与委托方法签名相同的方法，它在方法中会通过super调用委托方法；
+* 另一个是代理类独有的方法。在代理方法中，它会判断是否存在实现了MethodInterceptor接口的对象，若存在则将调用intercept方法对委托方法进行代理。
+
+底层将方法全部存入一个数组中，通过数组索引直接进行方法调用。
+
+
+
+</details>
+
+
+
+------ 
+
+### <span id="15">15.Spring是如何解决循环依赖的？</span>
+
+<details>
+<summary>展开</summary>
+
+Spring中的依赖注入有两种形式：
+
+* 构造函数的依赖注入
+* Setter的依赖注入
+
+Spring官方文档上写到The Spring team generally advocates constructor injection**(Spring团队通常支持构造函数注入)**，但是只有注入方式是**setter**且**singleton** ，才不会有循环依赖问题。
+
+解决循环依赖主要是利用三级缓存：
+```
+ //一级缓存
+	/** Cache of singleton objects: bean name to bean instance. */
+	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+//三级缓存
+	/** Cache of singleton factories: bean name to ObjectFactory. */
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+//二级缓存
+	/** Cache of early singleton objects: bean name to bean instance. */
+	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
+
+```
+
+* 第一级缓存（也叫单例池）singletonObjects：存放已经经历了完整生命周期的Bean对象。
+
+* 第二级缓存：earlySingletonObjects，存放早期暴露出来的Bean对象，Bean的生命周期未结束（属性还未填充完）。
+
+* 第三级缓存："Map<String, ObjectFactory<?>>" singletonFactories，存放可以生成Bean的工厂。
+
+所以Spring解决循环依赖依靠的是Bean的"中间态"这个概念，具体是依赖三级缓存来实现的。
+
+### 核心逻辑
+假设A、B循环引用：
+* 实例化A的时候就将其放入三级缓存中，接着属性赋值的时候，发现依赖了B
+
+* 同样的流程将B实例化后放入三级缓存，接着去填充属性时又发现B依赖A
+
+* B先查一级缓存，没有A，再查二级缓存，还是没有A，再查三级缓存，找到了A然后把三级缓存里面的这个A，如果没有AOP代理的话，直接将A的原始对象注入B，如果有AOP代理，就进行AOP处理获取代理后的对象A，然后将A放到二级缓存里面，并删除三级缓存里面的A。
+
+* 完成B的初始化后，进行属性填充和初始化，这时候B完成后，就去完成剩下的A的步骤，此时B已经创建结束，直接从一级缓存里面拿到B，然后完成创建，并将A自己放到一级缓存里面。
+
+
+### 代码实现
+1. 调用doGetBean()方法，想要获取beanA，于是调用getSingleton()方法从缓存中查找beanA
+
+3. 在getSingleton()方法中，从一级缓存中查找，没有，返回null
+4. doGetBean()方法中获取到的beanA为null，于是走对应的处理逻辑，调用getSingleton()的重载方法（参数为ObjectFactory的)
+5. 在getSingleton()方法中，先将beanA_name添加到一个集合中，用于标记该bean正在创建中。然后回调匿名内部类的creatBean方法
+6. 进入AbstractAutowireCapableBeanFactory#ndoCreateBean，先反射调用构造器创建出beanA的实例，然后判断:是否为单例、是否允许提前暴露引用(对于单例一般为true)、是否正在创建中（即是否在第四步的集合中）。判断为true则将beanA添加到【三级缓存】中
+7. 对beanA进行属性填充，此时检测到beanA依赖于beanB，于是开始查找beanB
+8. 调用doGetBean()方法，和上面beanA的过程一样，到缓存中查找beanB，没有则创建，然后给beanB填充属性
+9. 此时 beanB依赖于beanA，调用getSingleton()获取beanA，依次从一级、二级、三级缓存中找，此时从三级缓存中获取到beanA的创建工厂，通过创建工厂获取到singletonObject，此时这个singletonObject指向的就是上面在doCreateBean()方法中实例化的beanA
+10. 这样beanB就获取到了beanA的依赖，于是beanB顺利完成实例化，并将beanA从三级缓存移动到二级缓存中
+11. 随后beanA继续他的属性填充工作，此时也获取到了beanB，beanA也随之完成了创建，回到getsingleton()方法中继续向下执行，将beanA从二级缓存移动到一级缓存中
+
+
+</details>
+
+
+------ 
+
+### <span id="16">16.Spring的Bean作用域有哪些？</span>
+
+<details>
+<summary>展开</summary>
+
+Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面向对象程序设计中作用域一般指对象或变量之间的可见范围。
+
+而在Spring容器中是指其创建的Bean对象相对于其他Bean对象的请求可见范围。
+
+* Singleton: Spring IOC容器中仅存在一个Bean，单例的形式，Bean的缺省作用域。
+
+* Prototype: 每次从容其中调用Bean的时候都会创建一个Bean。
+
+* Request: 每次Http请求都创建一个Bean。
+
+* Session: 每个用户Session可以产生一个新的Bean，不同用户之间的Bean互不影响。
+
+* application:仅在ServletContext的生命周期内有效。
+
+* websocket:将单个 bean 定义范围限定为WebSocket。
+
+
+另外在加载对象的时机上分为懒汉式和饿汉式：
+
+* 懒汉式：Spring默认是不启用 懒加载的，属性是 ”lazy-init“ 的bean Spring初始化阶段不会进行init并且依赖注入，当第一次进行getBean时候进行初始化并依赖注入。
+
+* 饿汉式：在进行getBean的时候会从缓存里取，因为容器初始化阶段已经初始化了。
+
+* 单例模式下的Bean存在懒汉式和饿汉式，而非单例的Bean则是自动启动懒加载模式，没有饿汉模式。
+
+
+
 </details>
