@@ -635,8 +635,6 @@ Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面
 
 <details>
 <summary>展开</summary>
-# HTTP 的方法有哪些？
-
 
 1. HashMap的底层数据结构？
 
@@ -710,4 +708,16 @@ Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面
 
     假设只重写了自定义对象的equals方法，却没有重写hashCode方法，就会导致hash值不一样，那么在put时，HashMap里面本来有这个key，但是因为hash不一样，导致了put操作成功。逻辑上是不符合规范的，get时取出来的也可能是自己另一个的value。
 
+11. 你能简单介绍下ConcurrentHashMap吗？
+
+    JDK 1.7 中使用分段锁，一个 ConcurrentHashMap 里包含一个 Segment 数组。一个 Segment 包含一个 HashEntry 数组，HashEntry 的结构和 HashMap 类似，是一种数组和链表结构，每个 Segment 守护着一个 HashEntry 数组里的元素，当对 HashEntry 数组的数据进行修改时，必须首先获得对应的 Segment 的锁。
+
+    JDK 1.8 中，取消类 Segment 分段锁，采用Node + CAS + Synchronized来保证并发安全。synchronized 只锁定当前链表或红黑二叉树的首节点。
+    当 HashEntry 对象组成的链表长度超过 TREEIFY_THRESHOLD 时，链表转换为红黑树，提升性能。底层变更为数组 + 链表 + 红黑树
+
+    JDK1.8中，比如两个线程都是在node[5]这个位置进行put，同一个时间，只有一个线程能成功执行这个CAS，就是说刚开始先获取一下node[5]这个位置的值，null，然后执行CAS，比较一下，把值put进去这条数据，同时间，其他的线程执行CAS，都会失败。
+
+    如果其他人失败了，就会发现，node[5]这位置，已经给刚才又人放进去值了，就需要在这个位置基于链表+红黑树来进行处理，synchronized(node[5])，加锁，基于链表或者是红黑树在这个位置插进去自己的数据。
+
+    如果是对数组里同一个位置的元素进行操作，才会加锁串行化处理；如果是对数组不同位置的元素操作，此时大家可以并发执行的
 </details>
