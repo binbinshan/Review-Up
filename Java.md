@@ -38,11 +38,12 @@
 
 * [Spring的Bean作用域有哪些？](#16)
 
-* [HashMap的知识点](#17)
+* [Spring的bean是否是线程安全的](#17)
+
+* [HashMap的知识点](#18)
 
 ### 多线程
 
-* [HashMap的知识点](#17)
 
 
 
@@ -631,11 +632,24 @@ Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面
 
 </details>
 
+------ 
 
+### <span id="17">17.Spring的bean是否是线程安全的？</span>
+
+<details>
+<summary>展开</summary>
+
+对于单例Bean,所有线程都共享一个实例Bean,因此是存在资源的竞争。如果是其他作用域，则不存在资源竞争。
+
+当然如果单例Bean, 是一个无状态Bean，也就是线程中的操作不会对Bean的成员执行查询以外的操作，那么这个单例Bean是线程安全的。
+
+在@Controller/@Service等容器中，默认情况下，scope值是单例-singleton的，也是线程不安全的。
+
+</details>
 
 ------ 
 
-### <span id="17">17.HashMap的知识点</span>
+### <span id="18">18.HashMap的知识点</span>
 
 <details>
 <summary>展开</summary>
