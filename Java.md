@@ -40,10 +40,13 @@
 
 * [Spring的bean是否是线程安全的](#17)
 
-* [HashMap的知识点](#18)
+* [BeanFactory与FactoryBean的区别?](#18)
 
-### 多线程
+* [HashMap的知识点](#19)
 
+* [Object基类中都有哪些方法？](#20)
+
+* [Java中的浅拷贝和深拷贝是什么？](#21)
 
 
 
@@ -647,9 +650,31 @@ Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面
 
 </details>
 
+
 ------ 
 
-### <span id="18">18.HashMap的知识点</span>
+
+### <span id="18">18.BeanFactory与FactoryBean的区别?</span>
+
+<details>
+<summary>展开</summary>
+
+BeanFactory是一个接口，它是Spring中工厂的顶层规范，是SpringIoc容器的核心接口，它定义了getBean()、containsBean()等管理Bean的通用方法。Spring的容器都是它的具体实现如：XmlBeanFactory、ApplicationContext。
+
+FactoryBean是一个bean，但是又能生产或修饰对象生成的工厂Bean，FactoryBean在Spring中最为典型的一个应用就是用来创建AOP的代理对象-> ProxyFactoryBean。
+
+区别：
+
+1. 他们两个都是个工厂，但FactoryBean本质上还是一个Bean，也归BeanFactory管理
+2. BeanFactory是Spring容器的顶层接口，FactoryBean更类似于用户自定义的工厂接口。
+
+
+</details>
+
+
+------ 
+
+### <span id="19">19.HashMap的知识点</span>
 
 <details>
 <summary>展开</summary>
@@ -739,3 +764,37 @@ Spring Bean 中所说的作用域，在配置文件中即是“scope”，在面
 
     如果是对数组里同一个位置的元素进行操作，才会加锁串行化处理；如果是对数组不同位置的元素操作，此时大家可以并发执行的
 </details>
+
+
+### <span id="20">20.Object基类中都有哪些方法？</span>
+
+<details>
+<summary>展开</summary>
+
+clone、equals、hashcode、notfiy、wait、toString、finalize
+
+</details>
+
+------ 
+
+
+### <span id="21">21.Java中的浅拷贝和深拷贝是什么？</span>
+
+<details>
+<summary>展开</summary>
+
+浅拷贝：会创建一个新对象，新对象的属性和老对象相同。具体区别：
+
+* 如果属性是基本类型(int,double,long,boolean等)，拷贝的就是基本类型的值；
+* 如果属性是引用类型，拷贝的就是内存地址（即复制引用但不复制引用的对象） ，因此如果其中一个对象改变了这个地址，就会影响到另一个对象。
+
+调用super.clone()实现浅拷贝。
+
+深拷贝：在对引用数据类型进行拷贝的时候，创建了一个新的对象，并且复制其内的成员变量。也就是修改了一个对象不会影响另外一个对象。
+
+采用重写clone()方法或者序列化的方式实现深拷贝。
+
+
+</details>
+
+------ 
