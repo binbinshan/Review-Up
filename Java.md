@@ -50,6 +50,9 @@
 
 * [饿汉式和懒汉式？](#22)
 
+* [@Controller @Service 是不是线程安全的？](#23)
+
+
 
 
 
@@ -847,5 +850,73 @@ clone、equals、hashcode、notfiy、wait、toString、finalize
     }
     ```
 
+
+</details>
+
+
+
+
+------ 
+
+
+### <span id="23">23.@Controller @Service 是不是线程安全的？</span>
+
+<details>
+<summary>展开</summary>
+
+在spring中的bean默认都是单例的，如果是单例就存在安全问题的。这是因为当多个线程操作同一个对象的时候，对这个对象的成员变量的写操作会存在线程安全问题。
+
+但是，一般情况下，我们常用的 Controller、Service、Dao 这些 Bean 是无状态的。无状态的 Bean 不能保存数据，因此是线程安全的。
+
+假设现在有一个单例的Controller注入了一个单例的Service和一个多例的Service
+
+```
+@RestController
+@RequestMapping("/hello")
+public class SingletonController {
+	
+	//注入单例类
+    @Autowired
+    private SingletonService singletonService;
+
+	//注入多例类
+    @Autowired
+    private PrototypeService prototypeService;
+
+}
+
+@Service
+public class SingletonService {
+
+}
+
+@Service
+@Scope("prototype")
+public class PrototypeService {
+
+}
+```
+
+如果这个时候访问Controller的Service，那么每个Service都是单例的，因为Controller是单例的。
+
+如果Controller多例及Service多例情况下可以创建多个实例，而单例service还是单例。
+
+### 那么为什么Controller被设计成单例的呢？
+
+1. 性能：单例情况下减少了内存的开销，尤其是频繁的创建和销毁实例
+
+因为对于单例的对象来说，在多线程的情况，线程共享成员变量，导致线程不安全。所以对于成员变量的操作，可以使用ThreadLocal来保证线程安全。
+
+
+### 那么为什么无状态的Controller、Sevice是线程安全的呢？
+
+每个线程都有自己的虚拟机栈，栈是以帧为单位保存当前线程的运行状态。
+
+每个栈帧都有自己的局部变量表、方法出口等信息，每个方法调用的过程，就代表了一个栈帧在虚拟机栈中入栈到出栈的过程。
+Java栈上的所有数据都是私有的。任何线程都不能访问另一个线程的栈数据。所以我们不用考虑多线程情况下栈数据访问同步的情况。
+
+因为@Controller是单例模式，即一个对象只有一个实例，所以通过线程副本[栈]的模式实现并发访问。
+局部变量是线程隔离所以是安全的，但是成员变量和静态变量是放在堆中的，则是会受到多线程调用影响的。
+所以无状态的Controller、Sevice是线程安全。
 
 </details>
