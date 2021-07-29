@@ -20,7 +20,7 @@
 top命令是Linux下常用的**实时**的性能分析工具，能够实时的显示系统中各个进程占用的资源，类似于windows中的任务管理器。
 
 <div align="center"> 
-    <img src="https://github.com/binbinshan/Review-Up/blob/master/images/Linux/top1.jpg" width="1362px"> 
+    <img src="https://github.com/binbinshan/Review-Up/blob/master/images/Linux/top1.png" width="1362px"> 
 </div>
 <br>
 
