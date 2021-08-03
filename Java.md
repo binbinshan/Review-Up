@@ -131,11 +131,13 @@ volatile防止重排的实现是基于happens-before，其中happens-before有�
 ##### 与 ReentrantLock 相比优缺点分别是什么？
 <details>
 <summary>展开</summary>
-1. 实现：synchronized 是 JVM 实现的，是一个关键字 ，Lock 是 接口，基于JDK实现的；
 
-3. 性能：JDK1.6后对synchronized优化后，两者性能差距不大。
-4. 锁：synchronized是非公平锁，而ReentrantLock既可以是公平也可以是非公平。
-5. 绑定锁的条件：synchronized只支持一个条件，ReentrantLock则可以支出多个条件。
+1. 实现：synchronized 是 JVM 实现的，是一个关键字 ，Lock 是 接口，基于JDK实现的；
+2. 性能：JDK1.6后对synchronized优化后，两者性能差距不大。
+3. 锁：synchronized是非公平锁，无需手动释放锁，而ReentrantLock既可以是公平也可以是非公平，必须手动释放锁。
+4. 绑定锁的条件：synchronized只支持一个条件，ReentrantLock则可以支出多个条件。
+5. 锁中断：synchronized不支持锁中断，ReentrantLock支持锁中断和不中断。
+
 
 除非要使用ReentrantLock的高级功能外，基于都是用synchronized，因为synchronized会自动释放锁，不会导致死锁，并且是jvm原生支持的。
 
